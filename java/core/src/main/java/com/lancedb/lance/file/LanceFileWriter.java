@@ -23,6 +23,7 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class LanceFileWriter implements AutoCloseable {
 
@@ -34,7 +35,8 @@ public class LanceFileWriter implements AutoCloseable {
   private BufferAllocator allocator;
   private DictionaryProvider dictionaryProvider;
 
-  private static native LanceFileWriter openNative(String fileUri) throws IOException;
+  private static native LanceFileWriter openNative(
+      String fileUri, Map<String, String> storageOptions) throws IOException;
 
   private native void closeNative(long nativeLanceFileReaderHandle) throws IOException;
 
@@ -52,9 +54,12 @@ public class LanceFileWriter implements AutoCloseable {
    * @return a new LanceFileWriter
    */
   public static LanceFileWriter open(
-      String path, BufferAllocator allocator, DictionaryProvider dictionaryProvider)
+      String path,
+      BufferAllocator allocator,
+      DictionaryProvider dictionaryProvider,
+      Map<String, String> storageOptions)
       throws IOException {
-    LanceFileWriter writer = openNative(path);
+    LanceFileWriter writer = openNative(path, storageOptions);
     writer.allocator = allocator;
     writer.dictionaryProvider = dictionaryProvider;
     return writer;
@@ -82,10 +87,10 @@ public class LanceFileWriter implements AutoCloseable {
    *
    * <p>This method will also flush all remaining data and write the footer to the file.
    *
-   * @throws Exception if the writer cannot be closed
+   * @throws IOException if the writer cannot be closed
    */
   @Override
-  public void close() throws Exception {
+  public void close() throws IOException {
     closeNative(nativeFileWriterHandle);
   }
 }

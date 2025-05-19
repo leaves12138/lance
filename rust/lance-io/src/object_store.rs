@@ -286,6 +286,15 @@ impl ObjectStore {
     /// Parse from a string URI.
     ///
     /// Returns the ObjectStore instance and the absolute path to the object.
+    pub async fn from_uri_with_params_only(uri: &str, params: &ObjectStoreParams,) -> Result<(Arc<Self>, Path)> {
+        let registry = Arc::new(ObjectStoreRegistry::default());
+
+        Self::from_uri_and_params(registry, uri, params).await
+    }
+
+    /// Parse from a string URI.
+    ///
+    /// Returns the ObjectStore instance and the absolute path to the object.
     pub async fn from_uri_and_params(
         registry: Arc<ObjectStoreRegistry>,
         uri: &str,

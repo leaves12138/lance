@@ -14,7 +14,7 @@ fn main() -> Result<()> {
     prost_build.extern_path(".lance.encodings", "::lance_encoding::format::pb");
     prost_build.protoc_arg("--experimental_allow_proto3_optional");
     prost_build.enable_type_names();
-    prost_build.compile_protos(&["./protos/encodings-df.proto"], &["./protos"])?;
+    prost_build.compile_protos(&["/Users/yejunhao/project/lance/protos/encodings-df.proto"], &["/Users/yejunhao/project/lance/protos"])?;
 
     Ok(())
 }

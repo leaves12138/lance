@@ -16,11 +16,11 @@ fn main() -> Result<()> {
     prost_build.enable_type_names();
     prost_build.compile_protos(
         &[
-            "./protos/table.proto",
-            "./protos/transaction.proto",
-            "./protos/rowids.proto",
+            "/Users/yejunhao/project/lance/protos/table.proto",
+            "/Users/yejunhao/project/lance/protos/transaction.proto",
+            "/Users/yejunhao/project/lance/protos/rowids.proto",
         ],
-        &["./protos"],
+        &["/Users/yejunhao/project/lance/protos"],
     )?;
 
     Ok(())

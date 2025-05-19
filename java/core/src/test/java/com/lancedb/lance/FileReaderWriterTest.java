@@ -32,6 +32,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -65,7 +66,8 @@ public class FileReaderWriterTest {
 
   void createSimpleFile(String filePath) throws Exception {
     BufferAllocator allocator = new RootAllocator();
-    try (LanceFileWriter writer = LanceFileWriter.open(filePath, allocator, null)) {
+    try (LanceFileWriter writer =
+        LanceFileWriter.open(filePath, allocator, null, Collections.emptyMap())) {
       try (VectorSchemaRoot batch = createBatch(allocator)) {
         writer.write(batch);
       }
@@ -89,7 +91,7 @@ public class FileReaderWriterTest {
     assertEquals(100, reader.numRows());
     assertEquals(expectedSchema, reader.schema());
 
-    try (ArrowReader batches = reader.readAll(100)) {
+    try (ArrowReader batches = reader.readAll(null, null, 100)) {
       assertTrue(batches.loadNextBatch());
       VectorSchemaRoot batch = batches.getVectorSchemaRoot();
       assertEquals(100, batch.getRowCount());
@@ -97,7 +99,7 @@ public class FileReaderWriterTest {
       assertFalse(batches.loadNextBatch());
     }
 
-    try (ArrowReader batches = reader.readAll(15)) {
+    try (ArrowReader batches = reader.readAll(null, null, 15)) {
       for (int i = 0; i < 100; i += 15) {
         int expected = Math.min(15, 100 - i);
         assertTrue(batches.loadNextBatch());
@@ -134,7 +136,8 @@ public class FileReaderWriterTest {
     String filePath = tempDir.resolve("no_data.lance").toString();
     BufferAllocator allocator = new RootAllocator();
 
-    LanceFileWriter writer = LanceFileWriter.open(filePath, allocator, null);
+    LanceFileWriter writer =
+        LanceFileWriter.open(filePath, allocator, null, Collections.emptyMap());
 
     try {
       writer.close();
