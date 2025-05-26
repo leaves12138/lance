@@ -22,7 +22,10 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.ipc.ArrowReader;
 import org.apache.arrow.vector.types.pojo.Schema;
 
+import javax.annotation.Nullable;
+
 import java.io.IOException;
+import java.util.List;
 
 public class LanceFileReader implements AutoCloseable {
 
@@ -43,7 +46,12 @@ public class LanceFileReader implements AutoCloseable {
 
   private native void populateSchemaNative(long arrowSchemaMemoryAddress);
 
-  private native void readAllNative(int batchSize, long streamMemoryAddress) throws IOException;
+  private native void readAllNative(
+      int batchSize,
+      @Nullable List<String> projectedNames,
+      @Nullable int[] ranges,
+      long streamMemoryAddress)
+      throws IOException;
 
   private LanceFileReader() {}
 
@@ -67,7 +75,7 @@ public class LanceFileReader implements AutoCloseable {
    * <p>This method must be called to release resources when the reader is no longer needed.
    */
   @Override
-  public void close() throws Exception {
+  public void close() throws IOException {
     closeNative(nativeFileReaderHandle);
   }
 
@@ -103,9 +111,11 @@ public class LanceFileReader implements AutoCloseable {
    * @param batchSize the maximum number of rows to read in a single batch
    * @return an ArrowReader for the Lance file
    */
-  public ArrowReader readAll(int batchSize) throws IOException {
+  public ArrowReader readAll(
+      @Nullable List<String> projectedNames, @Nullable int[] ranges, int batchSize)
+      throws IOException {
     try (ArrowArrayStream ffiArrowArrayStream = ArrowArrayStream.allocateNew(allocator)) {
-      readAllNative(batchSize, ffiArrowArrayStream.memoryAddress());
+      readAllNative(batchSize, projectedNames, ranges, ffiArrowArrayStream.memoryAddress());
       return Data.importArrayStream(allocator, ffiArrowArrayStream);
     }
   }

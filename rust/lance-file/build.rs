@@ -15,11 +15,11 @@ fn main() -> Result<()> {
     prost_build.extern_path(".lance.encodings", "::lance_encoding::format::pb");
     prost_build.compile_protos(
         &[
-            "./protos/file.proto",
-            "./protos/file2.proto",
-            "./protos/encodings.proto",
+            "/Users/yejunhao/project/lance/protos/file.proto",
+            "/Users/yejunhao/project/lance/protos/file2.proto",
+            "/Users/yejunhao/project/lance/protos/encodings.proto",
         ],
-        &["./protos"],
+        &["/Users/yejunhao/project/lance/protos"],
     )?;
 
     Ok(())

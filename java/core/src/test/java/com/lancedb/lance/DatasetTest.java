@@ -13,7 +13,11 @@
  */
 package com.lancedb.lance;
 
+import com.lancedb.lance.index.DistanceType;
+import com.lancedb.lance.index.IndexParams;
+import com.lancedb.lance.index.vector.VectorIndexParams;
 import com.lancedb.lance.ipc.LanceScanner;
+import com.lancedb.lance.ipc.ScanOptions;
 import com.lancedb.lance.schema.ColumnAlteration;
 import com.lancedb.lance.schema.SqlExpressions;
 
@@ -361,6 +365,7 @@ public class DatasetTest {
   void testAddColumnsByStream() throws IOException {
     String testMethodName = new Object() {}.getClass().getEnclosingMethod().getName();
     String datasetPath = tempDir.resolve(testMethodName).toString();
+    datasetPath = "~/temp/testLance";
     try (RootAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
       TestUtils.SimpleTestDataset testDataset =
           new TestUtils.SimpleTestDataset(allocator, datasetPath);
@@ -437,7 +442,19 @@ public class DatasetTest {
           Schema actualSchema = dataset.getSchema();
           assertEquals(expectedSchema.getFields(), actualSchema.getFields());
 
-          try (LanceScanner scanner = dataset.newScan()) {
+          IndexParams params =
+              new IndexParams.Builder()
+                  .setVectorIndexParams(VectorIndexParams.ivfPq(2, 8, 2, DistanceType.L2, 2))
+                  .build();
+
+          //          dataset.createIndex(
+          //              Collections.singletonList("name"),
+          //              IndexType.BITMAP,
+          //              Optional.of("__lance_scalar_index"),
+          //              params,
+          //              false);
+          ScanOptions scanOptions = new ScanOptions.Builder().withRowId(true).build();
+          try (LanceScanner scanner = dataset.newScan(scanOptions)) {
             try (ArrowReader resultReader = scanner.scanBatches()) {
               assertTrue(resultReader.loadNextBatch());
               VectorSchemaRoot root = resultReader.getVectorSchemaRoot();

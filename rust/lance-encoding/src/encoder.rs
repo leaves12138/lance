@@ -893,6 +893,7 @@ impl CompressionStrategy for CoreArrayEncodingStrategy {
         _field: &Field,
         data: &DataBlock,
     ) -> Result<Box<dyn PerValueCompressor>> {
+        print!("Use per value ");
         match data {
             DataBlock::FixedWidth(_) => Ok(Box::new(ValueEncoder::default())),
             DataBlock::FixedSizeList(_) => Ok(Box::new(ValueEncoder::default())),

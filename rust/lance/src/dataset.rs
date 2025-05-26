@@ -3168,6 +3168,9 @@ mod tests {
         .await
         .unwrap();
 
+        let index = get_row_id_index(&dataset).await.unwrap().unwrap();
+        assert!(index.get(0).is_none());
+
         assert_all_manifests_use_scheme(&test_dir, ManifestNamingScheme::V2);
 
         UpdateBuilder::new(Arc::new(dataset))

@@ -17,7 +17,7 @@ use arrow_buffer::{bit_util, BooleanBuffer, NullBuffer, ScalarBuffer};
 use arrow_schema::{DataType, Field as ArrowField};
 use futures::{future::BoxFuture, stream::FuturesOrdered, FutureExt, TryStreamExt};
 use itertools::Itertools;
-use lance_arrow::deepcopy::deep_copy_array;
+use lance_arrow::deepcopy::{deep_copy_array, deep_copy_nulls};
 use lance_core::{
     cache::{Context, DeepSizeOf},
     datatypes::{
@@ -4533,7 +4533,7 @@ impl PrimitiveStructuralEncoder {
 
     fn extract_validity_buf(array: &dyn Array, repdef: &mut RepDefBuilder) {
         if let Some(validity) = array.nulls() {
-            repdef.add_validity_bitmap(validity.clone());
+            repdef.add_validity_bitmap(deep_copy_nulls(Some(validity)).unwrap());
         } else {
             repdef.add_no_null(array.len());
         }
