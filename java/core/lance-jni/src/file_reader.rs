@@ -1,7 +1,11 @@
-use std::ops::{Deref, Range};
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::ops::Range;
+use std::sync::Arc;
 
-use crate::{error::{Error, Result}, traits::IntoJava, JNIEnvExt, RT};
+use crate::{
+    error::{Error, Result},
+    traits::IntoJava,
+    RT
+};
 use arrow::{array::RecordBatchReader, ffi::FFI_ArrowSchema, ffi_stream::FFI_ArrowArrayStream};
 use arrow_schema::SchemaRef;
 use jni::objects::JIntArray;
@@ -12,6 +16,7 @@ use jni::{
 };
 use lance::io::ObjectStore;
 use lance_core::cache::FileMetadataCache;
+use lance_core::datatypes::Schema;
 use lance_encoding::decoder::{DecoderPlugins, FilterExpression};
 use lance_file::v2::reader::{FileReader, FileReaderOptions, ReaderProjection};
 use lance_index::scalar::IndexReader;
@@ -21,7 +26,6 @@ use lance_io::{
     ReadBatchParams,
 };
 use object_store::path::Path;
-use lance_core::datatypes::Schema;
 
 pub const NATIVE_READER: &str = "nativeFileReaderHandle";
 
