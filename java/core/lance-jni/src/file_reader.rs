@@ -1,11 +1,7 @@
 use std::ops::Range;
 use std::sync::Arc;
 
-use crate::{
-    error::{Error, Result},
-    traits::IntoJava,
-    RT
-};
+use crate::{error::{Error, Result}, traits::IntoJava, JNIEnvExt, RT};
 use arrow::{array::RecordBatchReader, ffi::FFI_ArrowSchema, ffi_stream::FFI_ArrowArrayStream};
 use arrow_schema::SchemaRef;
 use jni::objects::JIntArray;
